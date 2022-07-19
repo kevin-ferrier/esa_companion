@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "ESAMarathon Summer 2022 companion",
+  "description": "Track the schedule of ESAMarathon summer 2022",
+  "version": "1.0.0",
+  "background": {
+    "service_worker": "/background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "esa66.png",
+      "32": "esa66.png",
+      "48": "esa66.png",
+      "128": "esa66.png"
+    }
+  },
+  "permissions": ["alarms", "notifications", "storage"]
+}
