@@ -43,7 +43,11 @@
         <game-card
           :item="item"
           stream="1"
+          :notify-custom="notifyCustom"
+          :notify-all="notifyAll"
           v-show="filtered(item.game, item.scheduled, item.length)"
+          @track="(gameId) => trackGame(gameId)"
+          @untrack="(gameId) => untrackGame(gameId)"
         ></game-card>
       </ul>
     </div>
@@ -52,6 +56,7 @@
         <game-card
           :item="item"
           stream="2"
+          :notify-custom="notifyCustom"
           v-show="filtered(item.game, item.scheduled, item.length)"
         ></game-card>
       </ul>
@@ -70,12 +75,15 @@
     </div>
     <div class="form-check flex items-center">
       <label class="text-xl py-3 px-3">Notify new game starting</label>
-      <input
-        class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-violet-600 checked:border-violet-600 focus:outline-none transition duration-200 my-1 align-top bg-no-repeat bg-center bg-contain float-left cursor-pointer"
-        type="checkbox"
+      <select
+        class="form-select w-30 appearance-none block w-50 px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-violet-600 focus:outline-none"
+        aria-label="Default select example"
         v-model="notifyAll"
-        id="flexCheckDefault3"
-      />
+      >
+        <option value="None">None</option>
+        <option value="Custom">Custom</option>
+        <option value="All">All</option>
+      </select>
     </div>
     <div class="flex">
       <button
@@ -100,6 +108,7 @@
 import moment from "moment";
 import NavBar from "../components/navbar.vue";
 import GameCard from "../components/gameCard.vue";
+import { getSyncStorageData, setSyncStorageData } from "../libs/storage.js";
 export default {
   name: "popupView",
   components: {
@@ -111,10 +120,11 @@ export default {
       msg: "popup",
       schedule1: [],
       schedule2: [],
+      notifyAll: "All",
+      notifyCustom: {},
       selected: 1,
       filter: "",
       settingsDisplayed: false,
-      notifyAll: false,
       displayOldGames: true,
     };
   },
@@ -170,45 +180,48 @@ export default {
         console.log(error);
       }
     },
-    sendNotification(game) {
-      const notifId = Math.random();
-      chrome.notifications.create(notifId.toString(), {
-        type: "basic",
-        iconUrl: "esa66.png",
-        title: "New Run Started",
-        message: game,
-        priority: 2,
-      });
-    },
     setSchedule(schedule) {
       this.selected = schedule;
     },
-    saveSettings() {
-      localStorage.setItem(
-        "esa_settings",
-        JSON.stringify({
-          notifyAll: this.notifyAll,
-          displayOldGames: this.displayOldGames,
-        })
-      );
-      this.updateSettings();
+    async saveSettings() {
+      localStorage.setItem("displayOldGames", this.displayOldGames);
+      await this.updateSettingsBackend();
       this.settingsDisplayed = false;
     },
-    updateSettings() {
-      var settings_value = JSON.parse(localStorage.getItem("esa_settings"));
-      if (settings_value) {
-        this.displayOldGames = settings_value.displayOldGames;
-        this.notifyAll = settings_value.notifyAll;
+    async getSettings() {
+      // local settings
+      var settings_value = localStorage.getItem("displayOldGames");
+      if (settings_value !== undefined) {
+        this.displayOldGames = settings_value;
       }
-      this.updateWorkerSettings();
+      // synced settings
+      this.notifyAll = await getSyncStorageData("notifyAll");
+      if (this.notifyAll === undefined) {
+        this.notifyAll = "None";
+      }
+      this.notifyCustom = await getSyncStorageData("notifyCustom");
+      if (this.notifyCustom === undefined) {
+        this.notifyCustom = {};
+      }
+      await this.updateSettingsBackend();
     },
-    updateWorkerSettings() {
-      chrome.storage.sync.set({ notifyAll: this.notifyAll });
+    async updateSettingsBackend() {
+      await setSyncStorageData("notifyAll", this.notifyAll);
+      await setSyncStorageData("notifyCustom", this.notifyCustom);
+    },
+    async trackGame(gameId) {
+      this.notifyCustom[gameId] = true;
+      await this.updateSettingsBackend();
+    },
+    async untrackGame(gameId) {
+      delete this.notifyCustom[gameId];
+      await this.updateSettingsBackend();
     },
   },
-  mounted() {
+  async mounted() {
+    // chrome.storage.sync.clear();
     // Retrieve stored settings
-    this.updateSettings();
+    await this.getSettings();
     // get all games in the schedule
     this.getSchedule();
   },

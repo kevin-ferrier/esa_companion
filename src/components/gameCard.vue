@@ -15,13 +15,47 @@
         :class="bgColor"
       >
         <p class="font-bold flex items-center" :class="txtColor">
+          <!-- bell off -->
+          <a v-if="!isTracked" @click="trackNotification()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </a>
+          <a v-else @click="untrackNotification()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              fill="black"
+              viewBox="0 0 24 24"
+              stroke="black"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </a>
+          <!-- twitch -->
           <a href="#">
             <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
               data-icon="info-circle"
-              class="w-4 h-4 mr-2 fill-current"
+              class="w-4 h-4 mr-2"
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
@@ -34,7 +68,6 @@
               />
             </svg>
           </a>
-
           [{{ item.platform }}] {{ item.game }}
         </p>
         <div class="flex items-center">
@@ -67,7 +100,7 @@
 import moment from "moment";
 export default {
   name: "GameCard",
-  props: ["item", "stream"],
+  props: ["item", "stream", "notifyCustom", "notifyAll"],
   data() {
     return {
       time: null,
@@ -79,6 +112,7 @@ export default {
     this.time = moment(this.item.scheduled).fromNow();
     this.length = this.item.length;
     this.scheduled = this.item.scheduled;
+    this.trackedList = this.notifyCustom;
   },
   computed: {
     bgColor() {
@@ -136,6 +170,15 @@ export default {
         }
       }
     },
+    isTracked() {
+      if (this.notifyAll == "All") {
+        return true;
+      }
+      if (this.notifyAll == "None") {
+        return false;
+      }
+      return this.item.id in this.trackedList;
+    },
   },
   methods: {
     openStream(number) {
@@ -146,12 +189,21 @@ export default {
     showPlayer(player) {
       return player.split("]")[0].replace("[", "");
     },
-    // showTwitch(player) {
-    //   return player.split("(")[1].replace(")", "");
-    // },
     openTwitch(player) {
       var url = player.split("(")[1].replace(")", "");
       chrome.tabs.create({ url: url });
+    },
+    trackNotification() {
+      if (this.notifyAll == "Custom") {
+        this.trackedList[this.item.id] = true;
+        this.$emit("track", this.item.id);
+      }
+    },
+    untrackNotification() {
+      if (this.notifyAll == "Custom") {
+        delete this.trackedList[this.item.id];
+        this.$emit("untrack", this.item.id);
+      }
     },
   },
 };
