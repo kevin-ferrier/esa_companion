@@ -85,7 +85,7 @@
         <option value="All">All</option>
       </select>
     </div>
-    <div class="flex">
+    <div class="flex mt-3">
       <button
         @click="saveSettings()"
         type="button"
@@ -99,6 +99,15 @@
         class="w-full inline-block px-6 py-2.5 mx-3 bg-purple-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-300 hover:shadow-lg focus:bg-purple-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-300 active:shadow-lg transition duration-150 ease-in-out"
       >
         Cancel
+      </button>
+    </div>
+    <div class="flex">
+      <button
+        @click="resetSettings()"
+        type="button"
+        class="w-full mt-5 inline-block px-6 py-2.5 mx-3 bg-red-400 text-black font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-300 hover:shadow-lg focus:bg-red-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-300 active:shadow-lg transition duration-150 ease-in-out"
+      >
+        Reset
       </button>
     </div>
   </div>
@@ -184,6 +193,9 @@ export default {
       this.selected = schedule;
     },
     async saveSettings() {
+      if (this.notifyAll !== "Custom") {
+        this.notifyCustom = [];
+      }
       localStorage.setItem("displayOldGames", this.displayOldGames);
       await this.updateSettingsBackend();
       this.settingsDisplayed = false;
@@ -211,15 +223,26 @@ export default {
     },
     async trackGame(gameId) {
       this.notifyCustom[gameId] = true;
+      if (this.notifyAll !== "Custom") {
+        this.notifyAll = "Custom";
+      }
       await this.updateSettingsBackend();
     },
     async untrackGame(gameId) {
       delete this.notifyCustom[gameId];
+      if (this.notifyAll !== "Custom") {
+        this.notifyAll = "Custom";
+      }
       await this.updateSettingsBackend();
+    },
+    async resetSettings() {
+      chrome.storage.sync.clear();
+      localStorage.clear();
+      this.settingsDisplayed = false;
+      await this.getSettings();
     },
   },
   async mounted() {
-    // chrome.storage.sync.clear();
     // Retrieve stored settings
     await this.getSettings();
     // get all games in the schedule

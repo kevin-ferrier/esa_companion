@@ -194,16 +194,12 @@ export default {
       chrome.tabs.create({ url: url });
     },
     trackNotification() {
-      if (this.notifyAll == "Custom") {
-        this.trackedList[this.item.id] = true;
-        this.$emit("track", this.item.id);
-      }
+      this.trackedList[this.item.id] = true;
+      this.$emit("track", this.item.id);
     },
     untrackNotification() {
-      if (this.notifyAll == "Custom") {
-        delete this.trackedList[this.item.id];
-        this.$emit("untrack", this.item.id);
-      }
+      delete this.trackedList[this.item.id];
+      this.$emit("untrack", this.item.id);
     },
   },
 };
