@@ -1,4 +1,4 @@
-import { getSchedule, getCurrentGame } from "../libs/tools.js";
+import { getSchedule, getCurrentGame } from "../libs/esa.js";
 import {
   getLocalStorageData,
   getSyncStorageData,
@@ -15,6 +15,7 @@ export async function handleNotifications(a) {
   let stream2 = await getSchedule(2);
   let notifyAll = await getSyncStorageData("notifyAll");
   let notifyArray = await getLocalStorageData("notifyArray");
+
   // init undefined values
   if (notifyArray === undefined) {
     notifyArray = [];
@@ -28,22 +29,19 @@ export async function handleNotifications(a) {
     // get the current game for stream 1 and 2
     const currentGame1 = getCurrentGame(stream1);
     const currentGame2 = getCurrentGame(stream2);
-    // todo: refactor into a loop
-    if (
-      currentGame1 !== undefined &&
-      notifyArray.indexOf(currentGame1.id) == -1
-    ) {
-      sendNotification(currentGame1.game, "1", currentGame1.category);
-      await setLocalStorageData(currentGame1.id, true);
-      notifyArray.push(currentGame1.id);
-    }
-    if (
-      currentGame2 !== undefined &&
-      notifyArray.indexOf(currentGame2.id) == -1
-    ) {
-      sendNotification(currentGame2.game, "2", currentGame2.category);
-      await setLocalStorageData(currentGame2.id, true);
-      notifyArray.push(currentGame2.id);
+
+    const games = [currentGame1, currentGame2];
+    for (let i = 0; i < games.length; i++) {
+      let current = games[i];
+      let streamNumber = i + 1;
+      if (current !== undefined && notifyArray.indexOf(current.id) == -1) {
+        sendNotification(
+          current.game,
+          streamNumber.toString(),
+          current.category
+        );
+        notifyArray.push(current.id);
+      }
     }
     // save the pushed notifications
     await setLocalStorageData("notifyArray", notifyArray);
