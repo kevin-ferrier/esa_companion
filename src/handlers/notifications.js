@@ -24,8 +24,8 @@ export async function handleNotifications(a) {
     await setLocalStorageData("notifyArray", notifyArray);
   }
   if (notifyAll === undefined) {
-    notifyAll = "All";
-    await setSyncStorageData("notifyAll", "All");
+    notifyAll = "None";
+    await setSyncStorageData("notifyAll", "None");
   }
   if (notifyCustom === undefined) {
     notifyCustom = {};
