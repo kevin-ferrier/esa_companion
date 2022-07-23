@@ -182,8 +182,12 @@ export default {
   },
   methods: {
     openStream(number) {
+      let stream = "";
+      if (number == 2) {
+        stream = "2";
+      }
       chrome.tabs.create({
-        url: "https://www.twitch.tv/esamarathon" + number.toString(),
+        url: "https://www.twitch.tv/esamarathon" + stream,
       });
     },
     showPlayer(player) {
