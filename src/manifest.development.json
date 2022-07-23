@@ -9,10 +9,11 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "esa66.png",
-      "32": "esa66.png",
-      "48": "esa66.png",
-      "128": "esa66.png"
+      "16": "esa16.png",
+      "32": "esa32.png",
+      "48": "esa48.png",
+      "128": "esa128.png",
+      "256": "esa256.png"
     }
   },
   "permissions": ["alarms", "notifications", "storage", "tabs"]
