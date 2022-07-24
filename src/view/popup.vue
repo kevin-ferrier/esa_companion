@@ -57,7 +57,10 @@
           :item="item"
           stream="2"
           :notify-custom="notifyCustom"
+          :notify-all="notifyAll"
           v-show="filtered(item.game, item.scheduled, item.length)"
+          @track="(gameId) => trackGame(gameId)"
+          @untrack="(gameId) => untrackGame(gameId)"
         ></game-card>
       </ul>
     </div>
