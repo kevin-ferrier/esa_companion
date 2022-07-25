@@ -141,10 +141,11 @@ export default {
     },
     progress() {
       switch (this.gameStatus) {
-        case "current":
+        case "current": {
           let dif = moment().diff(moment(this.scheduled), "seconds");
           let percent = (dif / this.length) * 100;
           return "width:" + percent + "%";
+        }
         case "upcoming":
           return "width:" + 0 + "%";
         case "previous":
