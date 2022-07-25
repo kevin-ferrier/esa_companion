@@ -15,5 +15,5 @@
       "128": "esa66.png"
     }
   },
-  "permissions": ["alarms", "notifications", "storage", "tabs"]
+  "permissions": ["alarms", "notifications", "storage"]
 }
