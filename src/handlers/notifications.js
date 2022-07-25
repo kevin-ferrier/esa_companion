@@ -1,11 +1,11 @@
-import { getSchedule, getCurrentGame } from "../libs/esa.js";
+import { getSchedule, getCurrentGame } from "@/libs/esa";
 import {
   getLocalStorageData,
   getSyncStorageData,
   setLocalStorageData,
   setSyncStorageData,
-} from "../libs/storage";
-import { sendNotification } from "../libs/notifications.js";
+} from "@/libs/storage";
+import { sendNotification } from "@/libs/notifications";
 
 // Check notifications background check
 // eslint-disable-next-line
@@ -44,7 +44,7 @@ export async function handleNotifications(a) {
       let current = games[i];
       let streamNumber = i + 1;
       // check if already sent
-      if (current !== undefined && notifyArray.indexOf(current.id) == -1) {
+      if (current !== undefined && notifyArray.indexOf(current.id) === -1) {
         // notify everything or is in custom games list
         if (
           notifyAll === "All" ||

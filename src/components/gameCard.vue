@@ -142,8 +142,8 @@ export default {
     progress() {
       switch (this.gameStatus) {
         case "current":
-          var dif = moment().diff(moment(this.scheduled), "seconds");
-          var percent = (dif / this.length) * 100;
+          let dif = moment().diff(moment(this.scheduled), "seconds");
+          let percent = (dif / this.length) * 100;
           return "width:" + percent + "%";
         case "upcoming":
           return "width:" + 0 + "%";
@@ -154,9 +154,9 @@ export default {
       }
     },
     gameStatus() {
-      var now = moment();
-      var gameStart = moment(this.scheduled);
-      var gameEnd = moment(this.scheduled).add(this.length, "s");
+      let now = moment();
+      let gameStart = moment(this.scheduled);
+      let gameEnd = moment(this.scheduled).add(this.length, "s");
       if (gameStart.isAfter(now)) {
         // upcoming game
         return "upcoming";
@@ -171,10 +171,10 @@ export default {
       }
     },
     isTracked() {
-      if (this.notifyAll == "All") {
+      if (this.notifyAll === "All") {
         return true;
       }
-      if (this.notifyAll == "None") {
+      if (this.notifyAll === "None") {
         return false;
       }
       return this.item.id in this.trackedList;
@@ -183,7 +183,7 @@ export default {
   methods: {
     openStream(number) {
       let stream = "";
-      if (number == 2) {
+      if (number === 2) {
         stream = "2";
       }
       chrome.tabs.create({
@@ -194,7 +194,7 @@ export default {
       return player.split("]")[0].replace("[", "");
     },
     openTwitch(player) {
-      var url = player.split("(")[1].replace(")", "");
+      let url = player.split("(")[1].replace(")", "");
       chrome.tabs.create({ url: url });
     },
     trackNotification() {

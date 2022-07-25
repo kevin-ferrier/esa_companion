@@ -5,7 +5,7 @@
     <div class="w-full flex justify-start px-3 items-center">
       <a href="#"
         ><img src="esa66.png" class="w-8 h-8" @click="openStream()"
-      /></a>
+       alt="Esa"/></a>
       <a
         class="text-xl text-white hover:text-violet-200 pl-5"
         @click="openSchedule()"

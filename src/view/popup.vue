@@ -38,7 +38,7 @@
       </div>
     </div>
     <!-- schedule -->
-    <div v-if="selected == 1">
+    <div v-if="selected === 1">
       <ul v-for="item in schedule1" :key="item.id">
         <game-card
           :item="item"
@@ -120,7 +120,7 @@
 import moment from "moment";
 import NavBar from "../components/navbar.vue";
 import GameCard from "../components/gameCard.vue";
-import { getSyncStorageData, setSyncStorageData } from "../libs/storage.js";
+import { getSyncStorageData, setSyncStorageData } from "@/libs/storage";
 export default {
   name: "popupView",
   components: {
@@ -154,19 +154,12 @@ export default {
       }
     },
     isPastGame(scheduled, length) {
-      var now = moment();
-      var gameStart = moment(scheduled);
-      var gameEnd = moment(scheduled).add(length, "s");
-      if (gameStart.isAfter(now) || gameEnd.isAfter(now)) {
-        // upcoming game or current
-        return false;
-      } else {
-        // previous game
-        return true;
-      }
+      let now = moment();
+      let gameStart = moment(scheduled);
+      let gameEnd = moment(scheduled).add(length, "s");
+      return !(gameStart.isAfter(now) || gameEnd.isAfter(now));
     },
     async getSchedule() {
-      this.schedule = "updating";
       try {
         // const localhost = "http://localhost:8000/";
         const stream1 =
@@ -205,7 +198,7 @@ export default {
     },
     async getSettings() {
       // local settings
-      var settings_value = localStorage.getItem("displayOldGames");
+      let settings_value = localStorage.getItem("displayOldGames");
       if (settings_value !== undefined) {
         this.displayOldGames = settings_value;
       }
@@ -249,7 +242,7 @@ export default {
     // Retrieve stored settings
     await this.getSettings();
     // get all games in the schedule
-    this.getSchedule();
+    await this.getSchedule();
   },
 };
 </script>
@@ -268,7 +261,7 @@ html {
   height: 800px;
   width: 400px;
   /* margin-left: 10px; */
-  margin-right: 0px;
+  margin-right: 0;
   background-image: url("../../public/background.png");
   background-repeat: repeat-y;
 }

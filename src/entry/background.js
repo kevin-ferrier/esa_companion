@@ -1,7 +1,7 @@
 import moment from "moment";
-import { handleNotifications } from "../handlers/notifications.js";
-import { initBackgroundTimer } from "../handlers/alarms.js";
-import { handleNotificationsClick } from "../handlers/notificationsClick.js";
+import { handleNotifications } from "@/handlers/notifications";
+import { initBackgroundTimer } from "@/handlers/alarms";
+import { handleNotificationsClick } from "@/handlers/notificationsClick";
 console.log(`[${moment().format()}]Starting ESA Companion worker.`);
 
 // debug
